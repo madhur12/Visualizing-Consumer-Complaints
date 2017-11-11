@@ -7,11 +7,7 @@ class Timeline {
     /**
      * Constructor for the TimeLine
      *
-     * @param electoralVoteChart instance of ElectoralVoteChart
-     * @param tileChart instance of TileChart
-     * @param votePercentageChart instance of Vote Percentage Chart
-     * @param electionInfo instance of ElectionInfo
-     * @param electionWinners data corresponding to the winning parties over mutiple election years
+     * @param allComplaintsData entire CSV file
      */
     constructor(allComplaintsData) {
 
@@ -48,7 +44,13 @@ class Timeline {
                 return {
                     "Total": d3.sum(d, d => 1),
                     "Timely": d3.sum(d, d => d["Timely response?"]=="Yes" ? 1: 0 ),
-                    "Disputed": d3.sum(d, d => d["Consumer disputed?"]=="Yes" ? 1: 0 )
+                    "Disputed": d3.sum(d, d => d["Consumer disputed?"]=="Yes" ? 1: 0 ),
+                    "Fax": d3.sum(d, d => d["Submitted via"]=="Fax" ? 1: 0 ),
+                    "Web": d3.sum(d, d => d["Submitted via"]=="Web" ? 1: 0 ),
+                    "Referral": d3.sum(d, d => d["Submitted via"]=="Referral" ? 1: 0 ),
+                    "Phone": d3.sum(d, d => d["Submitted via"]=="Phone" ? 1: 0 ),
+                    "Postal": d3.sum(d, d => d["Submitted via"]=="Postal mail" ? 1: 0 ),
+                    "Mail": d3.sum(d, d => d["Submitted via"]=="Mail" ? 1: 0 )
                 }
             }).entries(allComplaintsData);
 
@@ -64,7 +66,7 @@ class Timeline {
 
         this.data.sort(function (a,b) {
             return d3.ascending(self.parseTime(a.key), self.parseTime(b.key));
-        })
+        });
 
         this.colorScale.domain(d3.keys(this.data[0].value));
         this.xScale.domain(d3.extent(this.data, function(d){
@@ -79,6 +81,9 @@ class Timeline {
         let xAxis = d3.axisBottom(this.xScale),
             xAxis2 = d3.axisBottom(this.x2Scale),
             yAxis = d3.axisLeft(this.yScale);
+
+        let yGrid = d3.axisLeft(this.yScale)
+            .ticks(5);
 
         let brush = d3.brushX()
             .extent([[0, 0], [this.svgWidth, this.height2]])
@@ -128,6 +133,12 @@ class Timeline {
         let focuslineGroups = focus.selectAll("g")
             .data(sources)
             .enter().append("g");
+
+        focus.append("g")
+            .attr("class", "grid")
+            .call(yGrid
+                .tickSize(-this.svgWidth)
+                .tickFormat(""));
 
         let focuslines = focuslineGroups.append("path")
             .attr("class","line")
