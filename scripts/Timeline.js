@@ -142,8 +142,7 @@ class Timeline {
 
         focus.append("g")
             .attr("class", "yAxis axis")
-            .call(yAxis)
-            .nice();
+            .call(yAxis);
 
         let contextlineGroups = context.selectAll("g")
             .data(sources)
@@ -167,11 +166,18 @@ class Timeline {
             .attr("y", -6)
             .attr("height", this.height2 + 7);
 
+        this.svg.append("rect")
+            .attr("class", "zoom")
+            .attr("width", this.svgWidth)
+            .attr("height", this.height1)
+            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
+            .call(zoom);
+
         function brushed() {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
             let s = d3.event.selection || self.x2Scale.range();
             self.xScale.domain(s.map(self.x2Scale.invert, self.x2Scale));
-            focus.select(".line").attr("d", line);
+            focus.selectAll(".line").attr("d", d => line(d.values));
             focus.select(".xAxis").call(xAxis);
             self.svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(self.svgWidth / (s[1] - s[0]))
@@ -182,9 +188,10 @@ class Timeline {
             if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
             let t = d3.event.transform;
             self.xScale.domain(t.rescaleX(self.x2Scale).domain());
-            focus.select(".line").attr("d", line);
+            focus.selectAll(".line").attr("d", d => line(d.values));
             focus.select(".xAxis").call(xAxis);
             context.select(".brush").call(brush.move, self.xScale.range().map(t.invertX, t));
+            console.log(d3.event.transform.k);
         }
 
     }
