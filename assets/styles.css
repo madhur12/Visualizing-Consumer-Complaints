@@ -20,18 +20,14 @@ div{
 
 .left, .right {
     width: 45%;
-    margin: 3px;
-    padding: 3px;
+    margin: 1px;
+    padding: 2px;
 }
 .left {
     float:left;
 }
 .right {
     float:right;
-}
-#namebar{
-    width:100%;
-    height:15%;
 }
 .line {
     fill: none;
@@ -42,4 +38,13 @@ div{
     cursor: move;
     fill: none;
     pointer-events: all;
+}
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+
+.grid path {
+    stroke-width: 0;
 }
