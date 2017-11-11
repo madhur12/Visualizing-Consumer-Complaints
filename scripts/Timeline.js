@@ -62,7 +62,7 @@ class Timeline {
         console.log(this.data);
         let self = this;
 
-        Array.sort(this.data, function (a,b) {
+        this.data.sort(function (a,b) {
             return d3.ascending(self.parseTime(a.key), self.parseTime(b.key));
         })
 
