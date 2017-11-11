@@ -9,5 +9,7 @@ d3.csv("data/Complaints_new.csv", function (error, allComplaintsData) {
     if (error) throw error;
     console.log("Data Read Complete");
     let timelineObj = new Timeline(allComplaintsData);
+    let performanceObj = new PerformanceChart(allComplaintsData);
+    performanceObj.updateCompanies();
     timelineObj.update();
 });
