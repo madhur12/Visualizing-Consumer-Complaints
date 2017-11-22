@@ -61,7 +61,6 @@ class Timeline {
      */
     update() {
 
-        console.log(this.data);
         let self = this;
 
         this.data.sort(function (a,b) {
@@ -76,7 +75,7 @@ class Timeline {
         this.x2Scale.domain(this.xScale.domain());
         this.y2Scale.domain(this.yScale.domain());
 
-        console.log(this.xScale.domain(), d3.extent(this.data, d => d.key=="null" ? new Date() : d.key));
+        //console.log(this.xScale.domain(), d3.extent(this.data, d => d.key=="null" ? new Date() : d.key));
 
         let xAxis = d3.axisBottom(this.xScale),
             xAxis2 = d3.axisBottom(this.x2Scale),
@@ -122,7 +121,7 @@ class Timeline {
             };
         });
 
-        console.log(sources);
+        //console.log(sources);
 
         let focus = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -202,7 +201,7 @@ class Timeline {
             focus.selectAll(".line").attr("d", d => line(d.values));
             focus.select(".xAxis").call(xAxis);
             context.select(".brush").call(brush.move, self.xScale.range().map(t.invertX, t));
-            console.log(d3.event.transform.k);
+           // console.log(d3.event.transform.k);
         }
 
     }

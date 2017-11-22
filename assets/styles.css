@@ -69,6 +69,14 @@ div.tooltip {
     padding: 2px;
 }
 
+
+.selectMap{
+    float:right;
+    width: 20%;
+    margin: 1px;
+    padding: 2px;
+}
+
 path {
     stroke: black;
     stroke-width: 2;
@@ -86,4 +94,14 @@ path {
 td, th {
     padding: 1px 4px;
     border: 1px black solid;
+}
+
+.tile {
+    stroke: grey;
+    stroke-width: 4;
+}
+
+select.selectMapHide
+{
+    display: none
 }

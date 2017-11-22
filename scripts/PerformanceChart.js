@@ -3,6 +3,7 @@ class PerformanceChart {
     constructor(allComplaintsData)
     {
         this.onetime = false;
+        this.onetimeDropDown = false;
         this.divBestWorst = d3.select("#best-worst");
         this.count = 0;
         // Initializes the svg elements required for this chart
@@ -31,8 +32,22 @@ class PerformanceChart {
                         "SubmittedviaWeb": d3.sum(d, d => d["Submitted via"] == "Web" ? 1 : 0),
                         "Timely": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
                         "Disputed": d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0),
-                        "PercentDisputed" : (d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0)/d3.sum(d, d => 1) *100),
-                        "PercentTimely" : (d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0)/d3.sum(d, d => 1) *100)
+                        "PercentDisputed": (d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
+                        "PercentTimely": (d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
+                        "StateData": d3.nest()
+                            .key(function (d) {
+                                return d["State"];
+                            })
+                            .rollup(function (d) {
+                                return {
+                                    "StateTotal": d3.sum(d, d => 1),
+                                    "Timely": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
+                                    "Disputed": d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0),
+                                    "PercentDisputed": (d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
+                                    "PercentTimely": (d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
+                                }
+                            })
+                            .entries(d),
                     }
             })
             .entries(allComplaintsData);
@@ -84,6 +99,7 @@ class PerformanceChart {
                 return d.key;
             }))
             .range([0, self.svgHeight - paddingBottom]);
+
 
         let x = d3.scaleLinear()
             .domain([0, d3.max(data, function (d) {
@@ -196,7 +212,7 @@ class PerformanceChart {
 
         if (!this.onetime) {
             let columns = ["Company Name", "Total Complaints", "Timely Responded Complaints", "Disputed Complaints", "Percentage of Disputed Complaints", "Percentage of Timely Responses", " "]
-            var table = d3.select("body").append("table")
+            var table = d3.select("#tableCompare").append("table")
                     .attr("id", "table")
                     .attr("width", this.svgWidth)
                     .attr("align", "center")
@@ -244,16 +260,13 @@ class PerformanceChart {
 
 
         function tabulate() {
-
-            let rows = d3.select("#tbody").selectAll("tr");
+            var rows = d3.select("#tbody").selectAll("tr");
 
             let rowData = rows.data(self.tableData);
             let rowEnter = rowData.enter().append("tr");
 
             rowEnter.append("th");
-
             rowData.exit().remove();
-
             rowData = rowEnter.merge(rowData);
 
             let thead = rowData.select("th");
@@ -274,7 +287,6 @@ class PerformanceChart {
                             "button-"+d.key ]
                 })
 
-
             tdata.enter().append("td");
 
             rowData.selectAll("td")
@@ -293,6 +305,18 @@ class PerformanceChart {
                 .text("X")
                 .on("click", d => clearData(d.replace("button-","")));
 
+            rows
+                .on("click", function(d) {
+
+                    d3.select(this).style("background-color", "steelblue")
+                    let data = this.__data__;
+                    let mapObj = new Map();
+                    mapObj.addMapData(data.key,data.value["StateData"]);
+                    if(self.onetimeDropDown == false){
+                        mapObj.drawMap();
+                        self.onetimeDropDown = true;
+                    }
+                });
             return table;
         }
 
@@ -304,5 +328,7 @@ class PerformanceChart {
 
             tabulate();
         }
+
+
     }
 }

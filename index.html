@@ -8,7 +8,7 @@
 </head>
 <style>
 	body {
-		background-image: url("background3.png");
+		background-image: url("assets/background3.png");
 	}
 </style>
 <body>
@@ -21,10 +21,18 @@
 		</div>
 		<div class = "horizontal">
 			<div id = "sunburst" class = "left"><h4><br><br>Sunburst</h4></div>
-			<div id = "map" class = "right"><h4><br><br>Map</h4></div>
 		</div>
 
 		<div id = "best-worst"><h4><br><br>Best-Worst Chart</h4><select id="inds" class = "select" onchange="chooseData()">
+			<option value="Total" selected="selected">Total Complaints</option>
+			<option value="Disputed">Disputed Complaints</option>
+			<option value="Timely">Timely Responded Complaints</option>
+			<option value="PercentDisputed">Percentage of Disputed Complaints</option>
+			<option value="PercentTimely">Percentage of Timely Response</option>
+		</select></div>
+		<div id = "tableCompare"><h4><br><br>Compare Table</h4></div>
+		<br><br>
+		<div id = "map"><h4>Map</h4><select id="indsStates" class = "selectMapHide" onchange="chooseDataMap()">
 			<option value="Total" selected="selected">Total Complaints</option>
 			<option value="Disputed">Disputed Complaints</option>
 			<option value="Timely">Timely Responded Complaints</option>
@@ -38,7 +46,7 @@
 	<script type="application/javascript" src="scripts/script.js"></script>
 	<script type="application/javascript" src="scripts/Timeline.js"></script>
 	<script type="application/javascript" src="scripts/PerformanceChart.js"></script>
-
+	<script type="application/javascript" src="scripts/Map.js"></script>
 
 </body>
 
