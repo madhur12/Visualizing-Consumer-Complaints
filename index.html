@@ -6,7 +6,13 @@
 	<link rel="stylesheet" href="assets/styles.css"/>
 	<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet"/>
 </head>
+<style>
+	body {
+		background-image: url("background3.png");
+	}
+</style>
 <body>
+
 	<div>
 		<h1>Visualising Consumer Complaints data</h1>
 	</div>
@@ -17,9 +23,27 @@
 			<div id = "sunburst" class = "left"><h4><br><br>Sunburst</h4></div>
 			<div id = "map" class = "right"><h4><br><br>Map</h4></div>
 		</div>
-		<div id = "best-worst"><h4><br><br>Best-Worst Chart</h4></div>
+
+		<div id = "best-worst"><h4><br><br>Best-Worst Chart</h4><select id="inds" class = "select" onchange="chooseData()">
+			<option value="Total" selected="selected">Total Complaints</option>
+			<option value="Disputed">Disputed Complaints</option>
+			<option value="Timely">Timely Responded Complaints</option>
+			<option value="PercentDisputed">Percentage of Disputed Complaints</option>
+			<option value="PercentTimely">Percentage of Timely Response</option>
+		</select></div>
 	</div>
+
+
 	<script src="https://d3js.org/d3.v4.js"></script>
 	<script type="application/javascript" src="scripts/script.js"></script>
 	<script type="application/javascript" src="scripts/Timeline.js"></script>
+	<script type="application/javascript" src="scripts/PerformanceChart.js"></script>
+
+
 </body>
+
+
+
+
+
+
