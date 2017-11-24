@@ -122,8 +122,6 @@ class Timeline {
             };
         });
 
-        console.log(sources);
-
         let focus = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
