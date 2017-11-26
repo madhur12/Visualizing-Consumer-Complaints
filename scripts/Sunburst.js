@@ -45,7 +45,7 @@ class Sunburst{
         // Initialize Breadcrumb
 
         this.breadDim = {
-            w: this.svgWidth/4 - 10, h: 30, s: 3, t: 10
+            w: this.svgWidth/4, h: 30, s: 3, t: 10
         };
 
         this.trail = d3.select("#sequence").append("svg:svg")
@@ -90,7 +90,7 @@ class Sunburst{
             .attr("d", this.arc)
             .style("fill", d => this.colorScale((d.children ? d : d.parent).data.key))
             .style("visibility", function (d) {
-                if (d.data.key == '' || d.parent == null)
+                if ((d.data.key == '' && !d.children) || d.parent == null)
                     return "hidden";
                 return "";
             })
@@ -217,6 +217,15 @@ class Sunburst{
 
         }
 
+        function getParents(a){
+            var nodeArray = [a];
+            while(a.parent){
+                nodeArray.push(a.parent);
+                a = a.parent
+            }
+            return nodeArray.reverse();
+        }
+
         function click(d) {
             // updateBreadcrumbs(getParents(d), d.value);
             chart.transition()
@@ -224,7 +233,7 @@ class Sunburst{
                 .tween("scale", function() {
                     let xd = d3.interpolate(self.xScale.domain(), [d.x0, d.x1]),
                         yd = d3.interpolate(self.yScale.domain(), [d.y0, 1]),
-                        yr = d3.interpolate(self.yScale.range(), [d.y0 ? 20 : 0, this.radius]);
+                        yr = d3.interpolate(self.yScale.range(), [d.y0 ? 20 : 0, self.radius]);
                     return function(t) {
                         self.xScale.domain(xd(t));
                         self.yScale.domain(yd(t)).range(yr(t));
@@ -233,7 +242,6 @@ class Sunburst{
                 .selectAll("path")
                 .attrTween("d", function(d) {
                     return function() {
-                        // console.log("Tween 2", self.check, "::",self.arc(d));
                         return self.arc(d);
                     };
                 });
@@ -244,29 +252,45 @@ class Sunburst{
     }
 
     updateData(timeStart = null, timeEnd = null, product = null, company = null, state = null){
+
+        this.svg.selectAll("path")
+            .style("opacity", 1)
+            .transition()
+            .duration(500)
+            .style("opacity", 0);
+
+        this.svg.selectAll("*").remove();
+
         this.data = this.allData;
-        // console.log("Initial Data : ", this.data);
+        console.log("Initial Data : ", this.data);
+        console.log("Company : ", company);
         let parseTime = d3.timeParse("%m/%d/%Y");
         if (timeStart != null){
+            console.log("Time Filter");
             this.data = this.data.filter(function (d) {
                 return parseTime(d["Date received"]) >= timeStart &&  parseTime(d["Date received"]) <= timeEnd;
             })
         }
         if (product != null){
+            console.log("Product Filter");
             this.data = this.data.filter(function (d) {
-                return parseTime(d["Product"]) == product;
+                return d["Product"] == product;
             })
         }
         if (company != null){
+            console.log("Company Filter");
             this.data = this.data.filter(function (d) {
-                return parseTime(d["Company"]) == company;
+                return d["Company"] == company;
             })
         }
         if (state != null){
+            console.log("State Filter");
             this.data = this.data.filter(function (d) {
-                return parseTime(d["State"]) == state;
+                return d["State"] == state;
             })
         }
+
+        console.log("Sunburst Data : ", this.data);
 
         this.data = d3.nest()
                 .key(d => d["Product"])
@@ -278,7 +302,6 @@ class Sunburst{
                 })
                 .entries(this.data);
 
-        // console.log("Sunburst Data : ", this.data);
         this.update();
     }
 }

@@ -81,3 +81,9 @@ td, th {
     padding: 1px 4px;
     border: 1px black solid;
 }
+
+.container-fluid > div, .row > .col {
+    border: solid;
+    border-color: gray;
+    border-width: medium;
+}

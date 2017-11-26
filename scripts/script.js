@@ -10,7 +10,7 @@ d3.csv("data/Complaints_new.csv", function (error, allComplaintsData) {
     console.log("Data Read Complete");
     let timelineObj = new Timeline(allComplaintsData);
     let sunburstObj = new Sunburst(allComplaintsData);
-    window.performanceObj = new PerformanceChart(allComplaintsData);
+    window.performanceObj = new PerformanceChart(allComplaintsData, sunburstObj);
     performanceObj.updateCompanies('Total');
     timelineObj.update();
     sunburstObj.updateData();
