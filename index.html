@@ -44,7 +44,15 @@
 		</div>
 
 		<div class = "row">
-			<div id = "sunburst" class = "col"><h4><br><br>Sunburst</h4></div>
+			<div id = "sunburst" class = "col"><h4><br><br>Sunburst</h4>
+				<div id="sequence" class = "row"></div>
+				<div id="chart" class = "row">
+					<div id="explanation" style="visibility: hidden;">
+						<span id="percentage"></span>
+						&nbsp;of the total complaints from this category
+					</div>
+				</div>
+			</div>
 
 			<div id = "best-worst" class="col"><h4><br><br>Best-Worst Chart</h4>
 				<select id="inds" class = "form-control pull-right" onchange="chooseData()">
