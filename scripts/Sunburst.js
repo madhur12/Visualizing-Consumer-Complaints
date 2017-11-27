@@ -4,8 +4,7 @@
 
 class Sunburst{
 
-    constructor(allData) {
-        console.log("Sunburst Called");
+    constructor() {
         this.divSunburst = d3.select("#chart");
 
         // Initializes the svg elements required for this chart
@@ -33,7 +32,7 @@ class Sunburst{
         this.yScale = d3.scaleSqrt()
             .range([0, this.radius]);
 
-        this.colorScale = d3.scaleOrdinal(d3.schemeCategory20);
+        this.colorScale = d3.scaleOrdinal(d3.schemeCategory20c);
 
         this.partition = d3.partition();
         this.arc = d3.arc()
@@ -45,29 +44,21 @@ class Sunburst{
         // Initialize Breadcrumb
 
         this.breadDim = {
-            w: this.svgWidth/4, h: 30, s: 3, t: 10
+            w: this.svgWidth/4 - 20, h: 30, s: 3, t: 10
         };
 
         this.trail = d3.select("#sequence").append("svg:svg")
             .attr("width", this.width)
             .attr("height", 50)
-            .attr("id", "trail");
+            .attr("id", "trail")
+            .attr("transform", "translate(10,0)");
 
         this.trail.append("svg:text")
             .attr("id", "endlabel")
             .style("fill", "#000");
 
-
-        this.allData = allData;
-
-        // For Interactivity
-
-        this.performanceObj = null;
-        this.timelineObj = null;
-        this.mapObj = null;
         this.data = null;
-
-        this.check = "Cons";
+        this.clicked = false;
     }
 
     update(){
@@ -84,13 +75,19 @@ class Sunburst{
             .sum(function(d) { return d.value; })
             .sort(function(a, b) { return b.value - a.value; });
 
+        // For efficiency, filter nodes to keep only those large enough to see.
+        let nodes = this.partition(root).descendants()
+            .filter(function(d) {
+                return (d.x1 - d.x0 > 0.001);
+            });
+
         chart.selectAll("path")
-            .data(this.partition(root).descendants())
+            .data(nodes)
             .enter().append("path")
             .attr("d", this.arc)
             .style("fill", d => this.colorScale((d.children ? d : d.parent).data.key))
             .style("visibility", function (d) {
-                if ((d.data.key == '' && !d.children) || d.parent == null)
+                if ((d.data.key == '' && !d.children))
                     return "hidden";
                 return "";
             })
@@ -176,7 +173,7 @@ class Sunburst{
             // Data join; key function combines name and depth (= position in sequence).
             let trail = d3.select("#trail")
                 .selectAll("g")
-                .data(nodeArray, function(d) { return d.data.name + d.depth; });
+                .data(nodeArray, function(d) { return d.data.key + d.depth; });
 
             // Remove exiting nodes.
             trail.exit().remove();
@@ -186,7 +183,7 @@ class Sunburst{
 
             entering.append("svg:polygon")
                 .attr("points", breadcrumbPoints)
-                .style("fill", function(d) { return self.colorScale(d.data.name); });
+                .style("fill", function(d) { return self.colorScale(d.data.key); });
 
             entering.append("svg:text")
                 .attr("x", (self.breadDim.w + self.breadDim.t) / 2)
@@ -195,7 +192,7 @@ class Sunburst{
                 .attr("text-anchor", "middle")
                 .text(function(d) {
                     if (d.data.key.length > 24)
-                        return d.data.key.substr(0, 24) + "...";
+                        return d.data.key.substr(0, 21) + "...";
                     return d.data.key; });
 
             // Merge enter and update selections; set position for all nodes.
@@ -217,17 +214,14 @@ class Sunburst{
 
         }
 
-        function getParents(a){
-            var nodeArray = [a];
-            while(a.parent){
-                nodeArray.push(a.parent);
-                a = a.parent
-            }
-            return nodeArray.reverse();
-        }
-
         function click(d) {
-            // updateBreadcrumbs(getParents(d), d.value);
+            this.clicked = true;
+            if (window.filters.Product != d.ancestors().reverse()[1]){
+                console.log("Clicked for product", d.ancestors().reverse()[1].data.key);
+                window.filters.Product = d.ancestors().reverse()[1].data.key;
+                window.updateFilters();
+            };
+
             chart.transition()
                 .duration(750)
                 .tween("scale", function() {
@@ -251,46 +245,28 @@ class Sunburst{
 
     }
 
-    updateData(timeStart = null, timeEnd = null, product = null, company = null, state = null){
+    updateData(){
+
+        // Don't update if clicked on the current chart
+        if (this.clicked){
+            this.clicked = false;
+            return
+        }
+
+        let parseTime = d3.timeParse("%m/%d/%Y");
 
         this.svg.selectAll("path")
-            .style("opacity", 1)
             .transition()
             .duration(500)
             .style("opacity", 0);
 
-        this.svg.selectAll("*").remove();
+        this.data = window.allData.filter(function (d) {
+            return (window.filters.Company == null || d["Company"] == window.filters.Company)
+                && (window.filters.State == null || d["State"] == window.filters.State)
+                && (window.filters.Start == null || (parseTime(d["Date received"]) >= window.filters.Start
+                &&  parseTime(d["Date received"]) <= window.filters.End));
 
-        this.data = this.allData;
-        console.log("Initial Data : ", this.data);
-        console.log("Company : ", company);
-        let parseTime = d3.timeParse("%m/%d/%Y");
-        if (timeStart != null){
-            console.log("Time Filter");
-            this.data = this.data.filter(function (d) {
-                return parseTime(d["Date received"]) >= timeStart &&  parseTime(d["Date received"]) <= timeEnd;
-            })
-        }
-        if (product != null){
-            console.log("Product Filter");
-            this.data = this.data.filter(function (d) {
-                return d["Product"] == product;
-            })
-        }
-        if (company != null){
-            console.log("Company Filter");
-            this.data = this.data.filter(function (d) {
-                return d["Company"] == company;
-            })
-        }
-        if (state != null){
-            console.log("State Filter");
-            this.data = this.data.filter(function (d) {
-                return d["State"] == state;
-            })
-        }
-
-        console.log("Sunburst Data : ", this.data);
+        });
 
         this.data = d3.nest()
                 .key(d => d["Product"])
@@ -301,6 +277,8 @@ class Sunburst{
                     return leaves.length
                 })
                 .entries(this.data);
+
+        this.svg.selectAll("*").remove();
 
         this.update();
     }

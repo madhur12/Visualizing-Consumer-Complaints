@@ -87,3 +87,7 @@ td, th {
     border-color: gray;
     border-width: medium;
 }
+
+#filters span {
+    color: gray;
+}

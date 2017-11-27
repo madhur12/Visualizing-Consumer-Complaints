@@ -47,7 +47,7 @@
 			<div id = "sunburst" class = "col"><h4><br><br>Sunburst</h4>
 				<div id="sequence" class = "row"></div>
 				<div id="chart" class = "row">
-					<div id="explanation" style="visibility: hidden;">
+					<div id="explanation" style="visibility: hidden; position: relative; top: 0px; left: 10px;">
 						<span id="percentage"></span>
 						&nbsp;of the total complaints from this category
 					</div>
@@ -56,10 +56,10 @@
 
 			<div id = "best-worst" class="col"><h4><br><br>Best-Worst Chart</h4>
 				<select id="inds" class = "form-control pull-right" onchange="chooseData()">
-				<option value="Total" selected="selected">Total Complaints</option>
+				<option value="Total">Total Complaints</option>
 				<option value="Disputed">Disputed Complaints</option>
 				<option value="Timely">Timely Responded Complaints</option>
-				<option value="PercentDisputed">Percentage of Disputed Complaints</option>
+				<option value="PercentDisputed" selected="selected">Percentage of Disputed Complaints</option>
 				<option value="PercentTimely">Percentage of Timely Response</option>
 			</select>
 			</div>
@@ -68,11 +68,20 @@
 		<div id = "map" class = "row"><h4><br><br>Map</h4></div>
 	</div>
 
+	<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-bottom">
+		<div class="container-fluid">
+			<span class="navbar-brand">Filters :&nbsp;</span>
+			<ul id="filters" class="navbar-nav mr-auto">
+			</ul>
+		</div>
+	</nav>
+
 	<script src="https://d3js.org/d3.v4.js"></script>
 	<script type="application/javascript" src="scripts/script.js"></script>
 	<script type="application/javascript" src="scripts/Timeline.js"></script>
 	<script type="application/javascript" src="scripts/PerformanceChart.js"></script>
 	<script type="application/javascript" src="scripts/Sunburst.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
 
 </body>
 
