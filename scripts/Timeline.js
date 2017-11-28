@@ -61,7 +61,7 @@ class Timeline {
      */
     update() {
 
-        console.log(this.data);
+        // console.log(this.data);
         let self = this;
 
         this.data.sort(function (a,b) {
@@ -76,7 +76,7 @@ class Timeline {
         this.x2Scale.domain(this.xScale.domain());
         this.y2Scale.domain(this.yScale.domain());
 
-        console.log(this.xScale.domain(), d3.extent(this.data, d => d.key=="null" ? new Date() : d.key));
+        // console.log(this.xScale.domain(), d3.extent(this.data, d => d.key=="null" ? new Date() : d.key));
 
         let xAxis = d3.axisBottom(this.xScale),
             xAxis2 = d3.axisBottom(this.x2Scale),
@@ -121,8 +121,6 @@ class Timeline {
                 })
             };
         });
-
-        console.log(sources);
 
         let focus = this.svg.append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -190,9 +188,17 @@ class Timeline {
             self.xScale.domain(s.map(self.x2Scale.invert, self.x2Scale));
             focus.selectAll(".line").attr("d", d => line(d.values));
             focus.select(".xAxis").call(xAxis);
+
             self.svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
                 .scale(self.svgWidth / (s[1] - s[0]))
-                .translate(-s[0], 0));
+                .translate(-s[0], 0))
+            ;
+
+            // Applying year filter
+            let yearRange = d3.event.selection.map(self.xScale.invert);
+            window.filters.Start = yearRange[0];
+            window.filters.End = yearRange[1];
+            callUpdate();
         }
 
         function zoomed() {
@@ -202,7 +208,19 @@ class Timeline {
             focus.selectAll(".line").attr("d", d => line(d.values));
             focus.select(".xAxis").call(xAxis);
             context.select(".brush").call(brush.move, self.xScale.range().map(t.invertX, t));
-            console.log(d3.event.transform.k);
+            // console.log(d3.event.transform.k);
+        }
+
+        let sleeping = false;
+
+        function callUpdate(){
+            if (!sleeping){
+                sleeping = true;
+                setTimeout(function(){
+                    window.updateFilters();
+                    sleeping = false;
+                }, 500);
+            }
         }
 
     }

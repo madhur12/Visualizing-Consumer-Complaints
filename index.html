@@ -1,49 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
 <head>
     <meta charset="UTF-8">
 	<title>Visualising Consumer Complaints</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="assets/styles.css"/>
 	<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet"/>
 </head>
+<!--
 <style>
 	body {
 		background-image: url("assets/background.png");
 	}
 </style>
-<body>
+-->
+<body class="bg-light">
 
-	<div>
-		<h1>Visualising Consumer Complaints data</h1>
-	</div>
-	<div class="graphs">
-		<div id = "timeline">
+	<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
+		<div class="container-fluid">
+			<h1 class="navbar-brand mb-0">Visualising Consumer Complaints data</h1>
+			<ul class="navbar-nav pull-right">
+				<li class="nav-item">
+					<a class="nav-link" href="#timeline">TimeLine</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#sunburst">Sunburst</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#best-worst">Performers</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#map">Map</a>
+				</li>
+			</ul>
 		</div>
-		<div class = "horizontal">
-			<div id = "sunburst" class = "left"><h4><br><br>Sunburst</h4></div>
-			<div id = "map" class = "right"><h4><br><br>Map</h4></div>
+	</nav>
+	<div class = "container-fluid">
+		<div id = "timeline" class="row">
 		</div>
 
-		<div id = "best-worst"><h4><br><br>Best-Worst Chart</h4><select id="inds" class = "select" onchange="chooseData()">
-			<option value="Total" selected="selected">Total Complaints</option>
-			<option value="Disputed">Disputed Complaints</option>
-			<option value="Timely">Timely Responded Complaints</option>
-			<option value="PercentDisputed">Percentage of Disputed Complaints</option>
-			<option value="PercentTimely">Percentage of Timely Response</option>
-		</select></div>
+		<div class = "row">
+			<div id = "sunburst" class = "col"><h4><br><br>Sunburst</h4>
+				<div id="sequence" class = "row"></div>
+				<div id="chart" class = "row">
+					<div id="explanation" style="visibility: hidden; position: relative; top: 0px; left: 10px;">
+						<span id="percentage"></span>
+						&nbsp;of the total complaints from this category
+					</div>
+				</div>
+			</div>
+
+			<div id = "best-worst" class="col"><h4><br><br>Best-Worst Chart</h4>
+				<select id="inds" class = "form-control pull-right" onchange="chooseData()">
+				<option value="Total">Total Complaints</option>
+				<option value="Disputed">Disputed Complaints</option>
+				<option value="Timely">Timely Responded Complaints</option>
+				<option value="PercentDisputed" selected="selected">Percentage of Disputed Complaints</option>
+				<option value="PercentTimely">Percentage of Timely Response</option>
+			</select>
+			</div>
+		</div>
+
+		<div id = "map" class = "row"><h4><br><br>Map</h4></div>
 	</div>
 
+	<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-bottom">
+		<div class="container-fluid">
+			<span class="navbar-brand">Filters :&nbsp;</span>
+			<ul id="filters" class="navbar-nav mr-auto">
+			</ul>
+		</div>
+	</nav>
 
 	<script src="https://d3js.org/d3.v4.js"></script>
 	<script type="application/javascript" src="scripts/script.js"></script>
 	<script type="application/javascript" src="scripts/Timeline.js"></script>
 	<script type="application/javascript" src="scripts/PerformanceChart.js"></script>
-
+	<script type="application/javascript" src="scripts/Sunburst.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
 
 </body>
-
-
-
-
-
-
