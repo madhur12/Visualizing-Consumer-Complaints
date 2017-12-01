@@ -1,76 +1,42 @@
 class PerformanceChart {
 
-    constructor(allComplaintsData)
+    constructor()
     {
         this.onetime = false;
-        this.onetimeDropDown = false;
         this.divBestWorst = d3.select("#best-worst");
         this.count = 0;
         // Initializes the svg elements required for this chart
         this.margin = {top: 10, right: 20, bottom: 30, left: 50};
         this.svgBounds = this.divBestWorst.node().getBoundingClientRect();
         this.svgWidth = this.svgBounds.width - this.margin.left - this.margin.right;
-        this.svgHeight = 500;
+        this.svgHeight = 700;
 
         this.svg = this.divBestWorst
             .append("svg")
             .attr("width", this.svgWidth)
-            .attr("height", this.svgHeight);
+            .attr("height", this.svgHeight)
+            .attr("id", "checkchutiyekacode");
 
-        var States = [];
+        let States = [];
         //Initializing the data for this chart
-        this.data = d3.nest()
-            .key(d => d["Company"])
-            .rollup(function(d) {
-                    return {
-                        "Total": d3.sum(d, d => 1),
-                        "SubmittedviaRef": d3.sum(d, d => d["Submitted via"] == "Referral" ? 1 : 0),
-                        "SubmittedviaPhone": d3.sum(d, d => d["Submitted via"] == "Phone" ? 1 : 0),
-                        "SubmittedviaPost": d3.sum(d, d => d["Submitted via"] == "Postal mail" ? 1 : 0),
-                        "SubmittedviaMail": d3.sum(d, d => d["Submitted via"] == "Mail" ? 1 : 0),
-                        "SubmittedviaFax": d3.sum(d, d => d["Submitted via"] == "Fax" ? 1 : 0),
-                        "SubmittedviaWeb": d3.sum(d, d => d["Submitted via"] == "Web" ? 1 : 0),
-                        "Timely": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
-                        "Disputed": d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0),
-                        "PercentDisputed": (d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
-                        "PercentTimely": (d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
-                        "StateData": d3.nest()
-                            .key(function (d) {
-                                return d["State"];
-                            })
-                            .rollup(function (d) {
-                                return {
-                                    "StateTotal": d3.sum(d, d => 1),
-                                    "Timely": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
-                                    "Disputed": d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0),
-                                    "PercentDisputed": (d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
-                                    "PercentTimely": (d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0) / d3.sum(d, d => 1) * 100),
-                                }
-                            })
-                            .entries(d),
-                    }
-            })
-            .entries(allComplaintsData);
+        this.data = null;
 
-        this.tableData = []
-
+        this.tableData = [];
+        this.clicked = false;
     }
 
     updateCompanies(strSort) {
-
-
-
-        var counter = this.count;
+        let counter = this.count;
         let self = this;
-        var totaldata = self.data;
-        var paddingLeft = 250;
-        var paddingBottom = 50;
-        var g1 = self.svg.append("g").attr("transform", "translate(20,10)");
-        var g2 = self.svg.append("g").attr("transform", "translate(20,10)");
+        let totaldata = self.data;
+        let paddingLeft = 250;
+        let paddingBottom = 50;
+        let g1 = self.svg.append("g").attr("transform", "translate(20,10)");
+        let g2 = self.svg.append("g").attr("transform", "translate(20,10)");
 
-        var data = []
+        let data = []
         totaldata.forEach(function (d) {
-            if (d.value.Total > 1000) {
+            if (d.value.Total > 500) {
                 data.push(d);
             }
         })
@@ -97,12 +63,11 @@ class PerformanceChart {
         }
 
         data = GetTopTenCompanies(data).concat(GetBottomTenCompanies(data).reverse())
-        var y = d3.scaleBand()
+        let y = d3.scaleBand()
             .domain(data.map(function (d) {
                 return d.key;
             }))
             .range([0, self.svgHeight - paddingBottom]);
-
 
         let x = d3.scaleLinear()
             .domain([0, d3.max(data, function (d) {
@@ -137,17 +102,17 @@ class PerformanceChart {
             });
 
 
-        var barAppend = self.svg.append("g")
+        let barAppend = self.svg.append("g")
             .attr("id", "barId")
             .attr("transform", "translate(20,10)");
-        var barSelection = d3.select("#barId");
-        var rectSelect = barSelection.selectAll("rect").data(data)
-        var newbars = rectSelect.enter().append("rect");
+        let barSelection = d3.select("#barId");
+        let rectSelect = barSelection.selectAll("rect").data(data)
+        let newbars = rectSelect.enter().append("rect");
         rectSelect.exit().remove();
         rectSelect = newbars.merge(rectSelect);
 
         rectSelect
-            .transition().duration(1500)
+            .transition().duration(1000)
             .attr("x", paddingLeft)
             .attr("y", function (d, i) {
                 return ((self.svgHeight - paddingBottom) / 20) * i;
@@ -164,12 +129,13 @@ class PerformanceChart {
                     return "Steelblue";
                 }
             })
+            .style("opacity", 0.7)
             .style("stroke", "black")
             .style("stroke-width", "1px");
 
 
-        var message = "" ;
-        var val;
+        let message = "" ;
+        let val;
         function getMessage(d) {
             if (strSort == "Total") {
                 message = "Total Complaints :";
@@ -194,7 +160,7 @@ class PerformanceChart {
             return val,message
         }
 
-        var div = d3.select("body").append("div")
+        let div = d3.select("body").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
@@ -215,9 +181,9 @@ class PerformanceChart {
 
         if (!this.onetime) {
             let columns = ["Company Name", "Total Complaints", "Timely Responded Complaints", "Disputed Complaints", "Percentage of Disputed Complaints", "Percentage of Timely Responses", " "]
-            var table = d3.select("#tableCompare").append("table")
+            let table = d3.select("body").append("table")
                     .attr("id", "table")
-                    .attr("width", this.svgWidth)
+                    .attr("width", this.svgWidth + this.svgWidth)
                     .attr("align", "center")
                     .style("border-collapse", "collapse")// <= Add this line in
                     .style("border", "2px black solid"), // <= Add this line in
@@ -231,7 +197,7 @@ class PerformanceChart {
                 .enter()
                 .append("th")
                 .attr("height", 20)
-                .style("background-color", "grey")
+                .style("background-color", "lightgrey")
                 .text(function (column) {
                     return column;
                 });
@@ -247,13 +213,19 @@ class PerformanceChart {
                         return "LightCoral";
                     }
                     else {
-                        return "Steelblue";
+                        return "steelblue";
                     }
                 });
                 d3.select(this)
                     .style("fill", "red");
                 d3.select("#table").style("display", "table");
                 let data = this.__data__;
+
+                self.clicked = true;
+                if (window.filters.Company != data.key){
+                    window.filters.Company = data.key;
+                    window.updateFilters();
+                };
 
                 if (self.tableData.find(d => d.key == data.key) == null) {
                     self.tableData.push(data);
@@ -263,13 +235,16 @@ class PerformanceChart {
 
 
         function tabulate() {
-            var rows = d3.select("#tbody").selectAll("tr");
+
+            let rows = d3.select("#tbody").selectAll("tr");
 
             let rowData = rows.data(self.tableData);
             let rowEnter = rowData.enter().append("tr");
 
             rowEnter.append("th");
+
             rowData.exit().remove();
+
             rowData = rowEnter.merge(rowData);
 
             let thead = rowData.select("th");
@@ -282,13 +257,14 @@ class PerformanceChart {
 
             let tdata = rowData.selectAll("td")
                 .data(function (d) {
-                        return [  d.value.Total,
-                              d.value.Timely,
-                            d.value.Disputed,
-                            (d.value.PercentDisputed).toFixed(2)+'%',
-                            (d.value.PercentTimely).toFixed(2)+'%',
-                            "button-"+d.key ]
+                    return [  d.value.Total,
+                        d.value.Timely,
+                        d.value.Disputed,
+                        (d.value.PercentDisputed).toFixed(2)+'%',
+                        (d.value.PercentTimely).toFixed(2)+'%',
+                        "button-"+d.key ]
                 })
+
 
             tdata.enter().append("td");
 
@@ -308,18 +284,6 @@ class PerformanceChart {
                 .text("X")
                 .on("click", d => clearData(d.replace("button-","")));
 
-            rows
-                .on("click", function(d) {
-
-                    d3.select(this).style("background-color", "steelblue")
-                    let data = this.__data__;
-                    let mapObj = new Map();
-                    if(self.onetimeDropDown == false){
-                        mapObj.drawMap();
-                        self.onetimeDropDown = true;
-                    }
-                    mapObj.addMapData(data.key,data.value["StateData"]);
-                });
             return table;
         }
 
@@ -331,7 +295,53 @@ class PerformanceChart {
 
             tabulate();
         }
+    }
 
+    updateData(){
+
+        // Don't update if clicked on the current chart
+        if (this.clicked){
+            this.clicked = false;
+            return
+        }
+
+        let parseTime = d3.timeParse("%m/%d/%Y");
+
+        this.data = window.allData.filter(function (d) {
+            return (window.filters.Product == null || d["Product"] == window.filters.Product)
+                && (window.filters.State == null || d["State"] == window.filters.State)
+                && (window.filters.Start == null || (parseTime(d["Date received"]) >= window.filters.Start
+                    &&  parseTime(d["Date received"]) <= window.filters.End));
+
+        });
+
+        this.data = d3.nest()
+            .key(d => d["Company"])
+            .rollup(function(d) {
+                return {
+                    "Total": d3.sum(d, d => 1),
+                    "SubmittedviaRef": d3.sum(d, d => d["Submitted via"] == "Referral" ? 1 : 0),
+                    "SubmittedviaPhone": d3.sum(d, d => d["Submitted via"] == "Phone" ? 1 : 0),
+                    "SubmittedviaPost": d3.sum(d, d => d["Submitted via"] == "Postal mail" ? 1 : 0),
+                    "SubmittedviaMail": d3.sum(d, d => d["Submitted via"] == "Mail" ? 1 : 0),
+                    "SubmittedviaFax": d3.sum(d, d => d["Submitted via"] == "Fax" ? 1 : 0),
+                    "SubmittedviaWeb": d3.sum(d, d => d["Submitted via"] == "Web" ? 1 : 0),
+                    "Timely": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
+                    "Disputed": d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0),
+                    "PercentDisputed" : (d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0)/d3.sum(d, d => 1) *100),
+                    "PercentTimely" : (d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0)/d3.sum(d, d => 1) *100)
+                }
+            })
+            .entries(this.data);
+
+        this.svg.selectAll("*").remove();
+
+        let dropdown = document.getElementById("inds");
+        let view = dropdown.options[dropdown.selectedIndex].value;
+
+        console.log(view);
+
+        this.updateCompanies(view);
 
     }
 }
