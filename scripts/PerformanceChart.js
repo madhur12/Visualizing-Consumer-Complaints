@@ -57,6 +57,9 @@ class PerformanceChart {
     }
 
     updateCompanies(strSort) {
+
+
+
         var counter = this.count;
         let self = this;
         var totaldata = self.data;
@@ -311,11 +314,11 @@ class PerformanceChart {
                     d3.select(this).style("background-color", "steelblue")
                     let data = this.__data__;
                     let mapObj = new Map();
-                    mapObj.addMapData(data.key,data.value["StateData"]);
                     if(self.onetimeDropDown == false){
                         mapObj.drawMap();
                         self.onetimeDropDown = true;
                     }
+                    mapObj.addMapData(data.key,data.value["StateData"]);
                 });
             return table;
         }
