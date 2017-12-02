@@ -18,32 +18,16 @@ d3.csv("data/Complaints_new.csv", function (error, allComplaintsData) {
         "Company": null,
         "State": null
     }
-    let timelineObj = new Timeline(allComplaintsData);
-    window.sunburstObj = new Sunburst();
-    window.performanceObj = new PerformanceChart();
-    timelineObj.update();
-    window.updateFilters();
+    d3.csv("data/map.csv", function (error, statesData) {
+        window.mapObj = new Map(statesData);
+        window.timelineObj = new Timeline(allComplaintsData);
+        window.sunburstObj = new Sunburst();
+        window.performanceObj = new PerformanceChart();
+        timelineObj.update();
+        window.updateFilters();
+    });
 });
 
-function chooseData() {
-    var x = document.getElementById("inds");
-    var index = x.options[x.selectedIndex].value;
-    if (index == "Total") {
-        performanceObj.updateCompanies('Total');
-    }
-    else if (index == "Disputed") {
-        performanceObj.updateCompanies('Disputed');
-    }
-    else if (index == "Timely") {
-        performanceObj.updateCompanies('Timely');
-    }
-    else if (index == "PercentDisputed") {
-        performanceObj.updateCompanies('PercentDisputed');
-    }
-    else if (index == "PercentTimely") {
-        performanceObj.updateCompanies('PercentTimely');
-    }
-}
 
 
 function updateFilters(){
@@ -89,6 +73,7 @@ function updateFilters(){
     }
 
     function callUpdates() {
+        window.mapObj.updateData();
         window.sunburstObj.updateData();
         window.performanceObj.updateData();
     }
