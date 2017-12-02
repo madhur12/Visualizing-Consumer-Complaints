@@ -75,7 +75,7 @@ function updateFilters(){
     filterList = liAdd.merge(filterList);
 
     filterList.select("span")
-        .text(d => d.value + "  ");
+        .text(d => "  " + d.value + "  ");
 
     filterList.select("button")
         .attr("type", "button")

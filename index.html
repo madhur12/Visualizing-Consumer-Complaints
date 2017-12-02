@@ -55,13 +55,6 @@
 			</div>
 
 			<div id = "best-worst" class="col"><h4><br><br>Best-Worst Chart</h4>
-				<select id="inds" class = "form-control pull-right" onchange="chooseData()">
-				<option value="Total">Total Complaints</option>
-				<option value="Disputed">Disputed Complaints</option>
-				<option value="Timely">Timely Responded Complaints</option>
-				<option value="PercentDisputed" selected="selected">Percentage of Disputed Complaints</option>
-				<option value="PercentTimely">Percentage of Timely Response</option>
-			</select>
 			</div>
 		</div>
 
@@ -73,6 +66,13 @@
 			<span class="navbar-brand">Filters :&nbsp;</span>
 			<ul id="filters" class="navbar-nav mr-auto">
 			</ul>
+			<select id="inds" class = "form-control pull-right" onchange="chooseData()">
+				<option value="Total">Total Complaints</option>
+				<option value="Disputed">Disputed Complaints</option>
+				<option value="Timely">Timely Responded Complaints</option>
+				<option value="PercentDisputed" selected="selected">Percentage of Disputed Complaints</option>
+				<option value="PercentTimely">Percentage of Timely Response</option>
+			</select>
 		</div>
 	</nav>
 

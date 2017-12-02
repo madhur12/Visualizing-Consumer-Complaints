@@ -1,6 +1,7 @@
 body{
     font-family: 'Ubuntu', sans-serif;
     padding-top: 65px;
+    padding-bottom: 65px;
 }
 h1, h2, h3, h4, h5, h6{
     margin-top:5px;
@@ -41,11 +42,30 @@ div.tooltip {
     pointer-events: none;
 }
 
-.select{
-    float:right;
-    width: 20%;
+#timetool {
+    position: absolute;
+    text-align: left;
+    width: 200px;
+    /*height: 200px;*/
+    padding: 5px;
+    font: 13px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+select{
+    /*float:right;*/
+    /*width: 100px;*/
     margin: 1px;
     padding: 2px;
+    max-width: 20%;
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #CAD9E3), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #FFFFFF, #CAD9E3 1px, #FFFFFF 25px);
+    box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+    -moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+    -webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
 }
 
 path {
@@ -90,4 +110,16 @@ td, th {
 
 #filters span {
     color: gray;
+}
+
+.hover-line {
+    stroke: #6F257F;
+    stroke-width: 2px;
+    stroke-dasharray: 3,3;
+}
+
+nav {
+    background: #254b87;
+    background-image: none;
+    background-repeat: no-repeat;
 }

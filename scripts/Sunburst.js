@@ -200,13 +200,13 @@ class Sunburst{
                 return "translate(" + i * (self.breadDim.w + self.breadDim.s) + ", 0)";
             });
 
-            // Now move and update the percentage at the end.
-            d3.select("#trail").select("#endlabel")
-                .attr("x", (nodeArray.length + 0.5) * (self.breadDim.w + self.breadDim.s))
-                .attr("y", self.breadDim.h / 2)
-                .attr("dy", "0.35em")
-                .attr("text-anchor", "middle")
-                .text(percentageString);
+            // // Now move and update the percentage at the end.
+            // d3.select("#trail").select("#endlabel")
+            //     .attr("x", (nodeArray.length + 0.5) * (self.breadDim.w + self.breadDim.s))
+            //     .attr("y", self.breadDim.h / 2)
+            //     .attr("dy", "0.35em")
+            //     .attr("text-anchor", "middle")
+            //     .text(percentageString);
 
             // Make the breadcrumb trail visible, if it's hidden.
             d3.select("#trail")
@@ -215,13 +215,6 @@ class Sunburst{
         }
 
         function click(d) {
-            this.clicked = true;
-            if (window.filters.Product != d.ancestors().reverse()[1]){
-                console.log("Clicked for product", d.ancestors().reverse()[1].data.key);
-                window.filters.Product = d.ancestors().reverse()[1].data.key;
-                window.updateFilters();
-            };
-
             chart.transition()
                 .duration(750)
                 .tween("scale", function() {
@@ -239,6 +232,14 @@ class Sunburst{
                         return self.arc(d);
                     };
                 });
+
+
+            self.clicked = true;
+            if (d.ancestors().length > 1 && window.filters.Product != d.ancestors().reverse()[1].data.key){
+                console.log("Inside if");
+                window.filters.Product = d.ancestors().reverse()[1].data.key;
+                window.updateFilters();
+            }
         }
 
         d3.select(self.frameElement).style("height", this.height + "px");
@@ -249,6 +250,7 @@ class Sunburst{
 
         // Don't update if clicked on the current chart
         if (this.clicked){
+            console.log("Clicked from product, so won't call update");
             this.clicked = false;
             return
         }
