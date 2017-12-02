@@ -9,15 +9,12 @@ class PerformanceChart {
         this.margin = {top: 10, right: 20, bottom: 20, left: 50};
         this.svgBounds = this.divBestWorst.node().getBoundingClientRect();
         this.svgWidth = this.svgBounds.width - this.margin.left - this.margin.right;
-        this.svgHeight = 700;
+        this.svgHeight = 600;
 
         this.svg = this.divBestWorst
             .append("svg")
             .attr("width", this.svgWidth)
-            .attr("height", this.svgHeight)
-            .attr("id", "checkchutiyekacode");
-
-
+            .attr("height", this.svgHeight);
 
         let States = [];
         //Initializing the data for this chart
@@ -25,13 +22,14 @@ class PerformanceChart {
 
         this.tableData = [];
         this.clicked = false;
+        this.minComplaints = 700;
     }
 
     updateCompanies(strSort) {
 
         // Minimum Number of Total Complaints:
-        let minComplaints = 300;
-
+        let minComplaints = this.minComplaints;
+        
         // min number of companies in the performance chart
         let numCompanies = 10;
 
@@ -40,14 +38,15 @@ class PerformanceChart {
         let totaldata = self.data;
         let paddingLeft = 250;
         let paddingBottom = 50;
-        let g1 = self.svg.append("g").attr("transform", "translate(20,10)");
-        let g2 = self.svg.append("g").attr("transform", "translate(20,10)");
+        let g1 = self.svg.append("g").attr("transform", "translate(10,30)");
+        let g2 = self.svg.append("g").attr("transform", "translate(10,30)");
         let data = [];
 
 
         let gMessage = this.svg
             .append("g")
-            .attr("transform", "translate(" + 20 + "," + self.svgHeight/2 +")")
+            .style("display", "none")
+            .attr("transform", "translate(" + 10 + "," + (20+ self.svgHeight/2) +")")
             .attr("width", this.svgWidth)
             .attr("height", this.svgHeight)
             .attr("id", "gMessage");
@@ -160,13 +159,13 @@ class PerformanceChart {
             if (document.contains(document.getElementById("yaxisWorst"))) {
                 document.getElementById("yaxisWorst").remove();
             }
-            gMessage.selectAll("text").exit().remove()
-            gMessage
-                .append("text")
-                .html("No Data meets the selected criteria !!!" +"<br/>" + " Please Try changing Filters")
-                .style("font-weight", "bold")
-                .style("fill" ,"steelblue")
-                .style("font-size", 36)
+            // gMessage.selectAll("text").exit().remove()
+            // gMessage
+            //     .append("text")
+            //     .html("No Data meets the selected criteria !!!" +"<br/>" + " Please Try changing Filters")
+            //     .style("font-weight", "bold")
+            //     .style("fill" ,"steelblue")
+            //     .style("font-size", 36)
         }
 
         let background = self.svg.append("g");
@@ -174,7 +173,7 @@ class PerformanceChart {
             .append("text")
             .attr("x",self.svgWidth/2)
             .attr("y",self.svgHeight/4)
-            .attr("text-anchor","middle")
+            .attr("text-anchor","start")
             .attr("class", "performer-category")
             .text("TOP");
 
@@ -182,14 +181,14 @@ class PerformanceChart {
             .append("text")
             .attr("x",self.svgWidth/2)
             .attr("y",self.svgHeight*3/4)
-            .attr("text-anchor","middle")
+            .attr("text-anchor","start")
             .attr("class", "performer-category")
             .text("BOTTOM");
 
 
         let barAppendBest = self.svg.append("g")
             .attr("id", "barIdBest")
-            .attr("transform","translate(20, " + (self.svgHeight/2 - 10) + ")");
+            .attr("transform","translate(10, " + (self.svgHeight/2 + 10) + ")");
         let barSelectionBest = d3.select("#barIdBest");
         let rectSelectBest = barSelectionBest.selectAll("rect").data(dataBest);
         let newbarsBest = rectSelectBest.enter().append("rect")
@@ -225,7 +224,7 @@ class PerformanceChart {
 
         let barAppendWorst = self.svg.append("g")
             .attr("id", "barIdWorst")
-            .attr("transform",  "translate(20,10)");
+            .attr("transform",  "translate(10,30)");
         let barSelectionWorst = d3.select("#barIdWorst");
         let rectSelectWorst = barSelectionWorst.selectAll("rect").data(dataWorst)
         let newbarsWorst = rectSelectWorst.enter().append("rect")
@@ -423,13 +422,23 @@ class PerformanceChart {
 
             tabulate();
         }
-        console.log("in main")
+
+        let view = strSort;
         d3.select("#inds").on("change", function () {
             let dropdown = document.getElementById("inds");
-            let view = dropdown.options[dropdown.selectedIndex].value;
+            view = dropdown.options[dropdown.selectedIndex].value;
             self.updateCompanies(view);
             window.mapObj.updateMap(view);
         });
+        
+        d3.select("#myRange")
+            .on("input", function () {
+                self.minComplaints = this.value;
+                d3.select("#buttonText").text("MinComplaints: "+ self.minComplaints);
+            })
+            .on("change", function () {
+                self.updateCompanies(view);
+            })
     }
 
     updateData(){

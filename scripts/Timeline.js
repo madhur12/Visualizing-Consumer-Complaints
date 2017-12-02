@@ -22,6 +22,12 @@ class Timeline {
         this.svgHeight = 350;
         this.height1 = 220;
         this.height2 = 50;
+
+        this.legendSVG = this.divTimeLine
+            .append("svg")
+            .attr("width", this.svgWidth)
+            .attr("height", 20);
+
         this.svg = this.divTimeLine
             .append("svg")
             .attr("width", this.svgWidth)
@@ -41,7 +47,7 @@ class Timeline {
         this.yScale = d3.scaleLinear().range([this.height1, 0]);
         this.x2Scale = d3.scaleTime().range([0, this.svgWidth]);
         this.y2Scale = d3.scaleLinear().range([this.height2, 0]);
-        this.colorScale = d3.scaleOrdinal(d3.schemeCategory20b);
+        this.colorScale = d3.scaleOrdinal(d3.schemeCategory20c);
         this.channelScale = d3.scaleLinear()
             .domain([0,100])
             .range([0,100]);
@@ -68,7 +74,6 @@ class Timeline {
             .key(function (d) {
                 let splitDate = d["Date received"].split("/");
                 return splitDate[0]+"/"+splitDate[2];
-
             })
             .rollup(function(d) {
                 return {
@@ -99,13 +104,20 @@ class Timeline {
             return d3.ascending(self.parseTime(a.key), self.parseTime(b.key));
         });
 
+        this.contextdata.sort(function (a, b) {
+            return d3.ascending(self.parseTimeContext(a.key), self.parseTimeContext(b.key));
+        });
+
         this.colorScale.domain(d3.keys(this.data[0].value));
+        // this.color2Scale.domain(d3.keys(this.data[0].value));
         this.xScale.domain(d3.extent(this.data, function (d) {
             return self.parseTime(d.key)
         }));
         this.yScale.domain([0, d3.max(this.data, d => d.value.Total)]);
-        this.x2Scale.domain(this.xScale.domain());
-        this.y2Scale.domain(this.yScale.domain());
+        this.x2Scale.domain(d3.extent(this.contextdata, function (d) {
+            return self.parseTimeContext(d.key)
+        }));
+        this.y2Scale.domain([0, d3.max(this.contextdata, d => d.value.Total)]);
 
 
         let xAxis = d3.axisBottom(this.xScale),
@@ -152,6 +164,31 @@ class Timeline {
                 name: name,
                 values: self.data.map(function (d) {
                     return {date: self.parseTime(d.key), total: +d.value[name]};
+                })
+            };
+        });
+
+        let legends = this.legendSVG.selectAll("g")
+            .data(sources);
+
+        let legendsEnter = legends.enter().append("g");
+
+        legendsEnter.append("circle")
+            .attr("cx", (d,i) => i*120 + 130)
+            .attr("cy", 10 )
+            .attr("r", 5)
+            .style("fill", d => this.colorScale(d.name));
+
+        legendsEnter.append("text")
+            .attr("x", (d,i) => i*120 + 145)
+            .attr("y", 15)
+            .text(d => d.name);
+
+        let sourcesContext = this.colorScale.domain().map(function (name) {
+            return {
+                name: name,
+                values: self.contextdata.map(function (d) {
+                    return {date: self.parseTimeContext(d.key), total: +d.value[name]};
                 })
             };
         });
@@ -239,7 +276,7 @@ class Timeline {
                         return (d3.event.pageX - 200) + "px";
                     return (d3.event.pageX + 10) + "px"
                 })
-                .style("top", 80 + "px");
+                .style("top", 100 + "px");
 
             focusTooltip.select(".x-hover-line").attr("y2", self.height1);
             focusTooltip.select(".y-hover-line").attr("x2", self.svgWidth + self.svgWidth);
@@ -329,7 +366,7 @@ class Timeline {
         }
 
         let contextlineGroups = context.selectAll("g")
-            .data(sources)
+            .data(sourcesContext)
             .enter().append("g");
 
         let contextLines = contextlineGroups.append("path")
@@ -388,20 +425,21 @@ class Timeline {
             focus.selectAll(".line").attr("d", d => line(d.values));
             focus.select(".xAxis").call(xAxis);
             context.select(".brush").call(brush.move, self.xScale.range().map(t.invertX, t));
+        }
 
 
-            let sleeping = false;
+        let sleeping = false;
 
-            function callUpdate() {
-                if (!sleeping) {
-                    sleeping = true;
-                    setTimeout(function () {
-                        window.updateFilters();
-                        sleeping = false;
-                    }, 500);
-                }
-
+        function callUpdate() {
+            if (!sleeping) {
+                sleeping = true;
+                setTimeout(function () {
+                    window.updateFilters();
+                    sleeping = false;
+                }, 500);
             }
+
+
         }
     }
 }

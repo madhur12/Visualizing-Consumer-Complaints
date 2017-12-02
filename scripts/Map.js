@@ -2,8 +2,8 @@
 class Map {
     constructor(stateData) {
         this.mapSelect = d3.select("#map");
-        this.array = []
-        this.margin = {top: 10, right: 150, bottom: 30, left: 150};
+        this.array = [];
+        this.margin = {top: 10, right: 20, bottom: 30, left: 20};
         this.svgBounds = this.mapSelect.node().getBoundingClientRect();
         this.svgWidth = this.svgBounds.width - this.margin.left - this.margin.right;
         this.svgHeight = 400;
@@ -13,8 +13,9 @@ class Map {
             .attr("width", this.svgWidth)
             .attr("height", this.svgHeight)
             .attr("align","center")
-            .attr("display", "block")
-            .attr("margin","auto");
+            .attr("transform", "translate(10,80)");
+            // .attr("display", "block")
+            // .attr("margin","auto");
 
         this.stateDetails = stateData;
         this.mapData = null;
@@ -49,7 +50,7 @@ class Map {
 
         var tooltip = this;
         var tip = d3.tip().attr('class', 'd3-tip')
-            .direction('se')
+            .direction('sw')
             .offset(function () {
                 return [0, 0];
             })
@@ -83,9 +84,9 @@ class Map {
             if (d[selectedValue] != null) {
                 return (+d[selectedValue]);
             }
-        })
-        let maxSelected = d3.max(self.mapData, d => (+d[selectedValue]))
-        console.log(maxSelected,minSelected)
+        });
+        let maxSelected = d3.max(self.mapData, d => (+d[selectedValue]));
+
         let colorScale = d3.scaleLinear()
             .domain([minSelected, maxSelected])
             .range(["#EFF2FB", "steelblue"]);

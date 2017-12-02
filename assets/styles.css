@@ -111,8 +111,8 @@ td, th {
 }
 
 .tile {
-    stroke: grey;
-    stroke-width: 4;
+    stroke: #fff;
+    stroke-width: 1px;
 }
 
 select.selectMapHide
@@ -185,13 +185,12 @@ select.selectMapHide
 
 .container-fluid > div, .row > .col {
     border: solid;
-    border-color: gray;
+    border-color: lightgray;
     border-width: thin;
 }
 
 #filters span {
     color: gray;
->>>>>>> master
 }
 
 .hover-line {
@@ -204,15 +203,6 @@ nav {
     background: #254b87;
     background-image: none;
     background-repeat: no-repeat;
-}
-
-input[type=range][orient=vertical]
-{
-    writing-mode: bt-lr; /* IE */
-    -webkit-appearance: slider-vertical; /* WebKit */
-    width: 8px;
-    height: 175px;
-    padding: 0 5px;
 }
 
 .slider {
@@ -246,7 +236,7 @@ input[type=range][orient=vertical]
 }
 
 .performer-category {
-    font-size: 35px;
+    font-size: 72px;
     fill: gray;
 }
 

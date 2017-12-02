@@ -32,13 +32,16 @@
 					<a class="nav-link" href="#timeline">TimeLine</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#sunburst">Sunburst</a>
+					<a class="nav-link" href="#sequence">Sunburst</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#best-worst">Performers</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#map">Map</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="Process%20Book.pdf">Process Book</a>
 				</li>
 			</ul>
 		</div>
@@ -66,7 +69,6 @@
 
 					</p><br>
 				</div>
-				<!--<div id = "sunburst" class = "row">-->
 					<div id="sequence" class = "row"></div>
 					<div id="chart" class = "row">
 						<div id="explanation" style="visibility: hidden; position: relative; top: 0px; left: 10px;">
@@ -74,14 +76,13 @@
 							&nbsp;of the total complaints from this category
 						</div>
 					</div>
-				<!--</div>-->
 			</div>
 
-			<div id = "best-worst" class="col"><h4><br><br>Best-Worst Chart</h4>
+			<div class="col">
+				<div id = "best-worst" class="row"><br></div>
+				<div id = "map" class = "row"><br></div>
 			</div>
 		</div>
-
-		<div id = "map" class = "row"><h4><br><br>Map</h4></div>
 
 	</div>
 
@@ -99,7 +100,7 @@
 				<option value="PercentTimely">Percentage of Timely Response</option>
 			</select>
 			<button type="button" title="Toggle Range Slider" class="navbar-toggle btn btn-outline-secondary" data-toggle="collapse" data-target="#myRange">
-				<span>MinComplaints: 700</span>
+				<span id="buttonText">MinComplaints: 700</span>
 			</button>
 		</div>
 		<div class="collapse navbar-collapse collapsed" title="Min: 0 || Max: 2000">
