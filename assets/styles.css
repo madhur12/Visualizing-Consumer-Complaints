@@ -74,7 +74,7 @@ path {
     fill: none;
 }
 
-#sunburst path {
+#chart path {
     stroke: white;
     stroke-width: 1;
 }
@@ -105,7 +105,7 @@ td, th {
 .container-fluid > div, .row > .col {
     border: solid;
     border-color: gray;
-    border-width: medium;
+    border-width: thin;
 }
 
 #filters span {
@@ -122,4 +122,54 @@ nav {
     background: #254b87;
     background-image: none;
     background-repeat: no-repeat;
+}
+
+input[type=range][orient=vertical]
+{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 8px;
+    height: 175px;
+    padding: 0 5px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+.performer-category {
+    font-size: 35px;
+    fill: gray;
+}
+
+#about {
+    column-count: 2;
+    column-rule: 1px solid lightblue;
+    column-span: all;
 }

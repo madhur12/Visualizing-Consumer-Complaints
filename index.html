@@ -44,14 +44,33 @@
 		</div>
 
 		<div class = "row">
-			<div id = "sunburst" class = "col"><h4><br><br>Sunburst</h4>
-				<div id="sequence" class = "row"></div>
-				<div id="chart" class = "row">
-					<div id="explanation" style="visibility: hidden; position: relative; top: 0px; left: 10px;">
-						<span id="percentage"></span>
-						&nbsp;of the total complaints from this category
-					</div>
+			<div class = "col"><br>
+				<div id = "about">
+					<p>
+						<span><b>Timeline :</b></span><br>
+						The timeline on the top of the page can be used to select the time range as well as zoom into a specific time period to get more info about the period. <br>
+						<span><b>Product-Issue Distribution :</b></span><br>
+						Below Chart provides distribution of Products, Sub-Products, Issues, and Sub-Issues. Clicking on any sequence will update all the views with the corresponding product category.<br>
+						<span><b>Performers Chart :</b></span><br>
+						The bar charts on the right show the best worst performers based on different categories. Clicking on any company updates all the views filtered for the specific company. <br>
+						<span><b>States Statistics :</b></span><br>
+						Consumer can also see how the financial companies are performing in different states using the HeatMap. The states can be added to filter as well by clicking on them to see the performers in the state. <br>
+						<span><b>Company Comparision Table:</b></span><br>
+						You can click on the companies to add them to the comparision table at the bottom of the page.<br>
+						<span><b>Control Bar :</b></span><br>
+						Finally, the various data filters can be controlled using the bar at the bottom of the page.<br>
+
+					</p><br>
 				</div>
+				<!--<div id = "sunburst" class = "row">-->
+					<div id="sequence" class = "row"></div>
+					<div id="chart" class = "row">
+						<div id="explanation" style="visibility: hidden; position: relative; top: 0px; left: 10px;">
+							<span id="percentage"></span>
+							&nbsp;of the total complaints from this category
+						</div>
+					</div>
+				<!--</div>-->
 			</div>
 
 			<div id = "best-worst" class="col"><h4><br><br>Best-Worst Chart</h4>
@@ -60,6 +79,7 @@
 
 		<div id = "map" class = "row"><h4><br><br>Map</h4></div>
 	</div>
+
 
 	<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-bottom">
 		<div class="container-fluid">
@@ -73,6 +93,16 @@
 				<option value="PercentDisputed" selected="selected">Percentage of Disputed Complaints</option>
 				<option value="PercentTimely">Percentage of Timely Response</option>
 			</select>
+			<button type="button" title="Toggle Range Slider" class="navbar-toggle btn btn-outline-secondary" data-toggle="collapse" data-target="#myRange">
+				<span>MinComplaints: 700</span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse collapsed" title="Min: 0 || Max: 2000">
+			<ul class="navbar-nav pull-right">
+				<!--<li class="nav-item"> 0&nbsp;&nbsp; </li>-->
+				<li class="nav-item"><input type="range" min="0" max="2000" value="700" class="slider" id="myRange"></li>
+				<!--<li class="nav-item"> &nbsp;&nbsp;2000 </li>-->
+			</ul>
 		</div>
 	</nav>
 

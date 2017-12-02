@@ -94,7 +94,15 @@ class Sunburst{
             .on("click", click)
             .on("mouseover", mouseover)
             .append("title")
-            .text(d => d.data.key + "\n" + this.formatNumber(d.value));
+            .text(function (d) {
+                if (d.parent == null) {
+                    return "";
+                }
+                let sbText = d.data.key;
+                if (sbText == "")
+                    sbText = d.parent.data.key;
+                return sbText + "\n" + self.formatNumber(d.value);
+            });
 
         let totalSize = root.value;
 
@@ -191,9 +199,13 @@ class Sunburst{
                 .attr("dy", "0.35em")
                 .attr("text-anchor", "middle")
                 .text(function(d) {
-                    if (d.data.key.length > 24)
-                        return d.data.key.substr(0, 21) + "...";
-                    return d.data.key; });
+                    console.log(d);
+                    let catText = d.data.key;
+                    if (catText == "")
+                        catText = d.parent.data.key;
+                    if (catText.length > 24)
+                        return catText.substr(0, 21) + "...";
+                    return catText; });
 
             // Merge enter and update selections; set position for all nodes.
             entering.merge(trail).attr("transform", function(d, i) {
