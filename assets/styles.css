@@ -48,6 +48,14 @@ div.tooltip {
     padding: 2px;
 }
 
+
+.selectMap{
+    float:right;
+    width: 20%;
+    margin: 1px;
+    padding: 2px;
+}
+
 path {
     stroke: black;
     stroke-width: 2;
@@ -82,6 +90,79 @@ td, th {
     border: 1px black solid;
 }
 
+.tile {
+    stroke: grey;
+    stroke-width: 4;
+}
+
+select.selectMapHide
+{
+    display: none
+}
+
+.d3-tip {
+    /*line-height: 5;*/
+    padding-left: 10px;
+    padding-right: 10px;
+    min-width: 300px;
+    border-style: groove;
+    /*padding: 12px;*/
+    background: #e6e6e6;
+    color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    pointer-events: none;
+}
+.tooltip-title{
+    font-size:18px;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+    /*box-sizing: border-box;*/
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    /*line-height: 1;*/
+    color: rgba(0, 0, 0, 0.8);
+    position: relative;
+    pointer-events: none;
+}
+
+/* Northward tooltips */
+.d3-tip.n:after {
+    content: "\25BC";
+    /*margin: -1px 0 0 0;*/
+    top: 100%;
+    left: 0;
+    text-align: center;
+}
+
+/* Eastward tooltips */
+.d3-tip.e:after {
+    content: "\26A0";
+    /*margin: -4px 0 0 0;*/
+    top: -800px;
+    left: -8px;
+}
+
+/* Southward tooltips */
+.d3-tip.s:after {
+    content: "\25B2";
+    /*margin: 4px 0 1px 0;*/
+    top: -8px;
+    left: 1481px;
+    text-align: center;
+}
+
+/* Westward tooltips */
+.d3-tip.w:after {
+    content: "\25B6";
+    /*margin: -4px 0 0 -1px;*/
+    top: 50%;
+    left: 100%;
+}
+
 .container-fluid > div, .row > .col {
     border: solid;
     border-color: gray;
@@ -90,5 +171,6 @@ td, th {
 
 #filters span {
     color: gray;
+>>>>>>> master
 }
 

@@ -40,17 +40,17 @@ class Timeline {
 
         this.data = d3.nest()
             .key(d => d["Date received"])
-            .rollup(function(d) {
+            .rollup(function (d) {
                 return {
                     "Total": d3.sum(d, d => 1),
-                    "Timely": d3.sum(d, d => d["Timely response?"]=="Yes" ? 1: 0 ),
-                    "Disputed": d3.sum(d, d => d["Consumer disputed?"]=="Yes" ? 1: 0 ),
-                    "Fax": d3.sum(d, d => d["Submitted via"]=="Fax" ? 1: 0 ),
-                    "Web": d3.sum(d, d => d["Submitted via"]=="Web" ? 1: 0 ),
-                    "Referral": d3.sum(d, d => d["Submitted via"]=="Referral" ? 1: 0 ),
-                    "Phone": d3.sum(d, d => d["Submitted via"]=="Phone" ? 1: 0 ),
-                    "Postal": d3.sum(d, d => d["Submitted via"]=="Postal mail" ? 1: 0 ),
-                    "Mail": d3.sum(d, d => d["Submitted via"]=="Mail" ? 1: 0 )
+                    "Timely": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
+                    "Disputed": d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0),
+                    "Fax": d3.sum(d, d => d["Submitted via"] == "Fax" ? 1 : 0),
+                    "Web": d3.sum(d, d => d["Submitted via"] == "Web" ? 1 : 0),
+                    "Referral": d3.sum(d, d => d["Submitted via"] == "Referral" ? 1 : 0),
+                    "Phone": d3.sum(d, d => d["Submitted via"] == "Phone" ? 1 : 0),
+                    "Postal": d3.sum(d, d => d["Submitted via"] == "Postal mail" ? 1 : 0),
+                    "Mail": d3.sum(d, d => d["Submitted via"] == "Mail" ? 1 : 0)
                 }
             }).entries(allComplaintsData);
 
@@ -61,22 +61,20 @@ class Timeline {
      */
     update() {
 
-        // console.log(this.data);
         let self = this;
 
-        this.data.sort(function (a,b) {
+        this.data.sort(function (a, b) {
             return d3.ascending(self.parseTime(a.key), self.parseTime(b.key));
         });
 
         this.colorScale.domain(d3.keys(this.data[0].value));
-        this.xScale.domain(d3.extent(this.data, function(d){
+        this.xScale.domain(d3.extent(this.data, function (d) {
             return self.parseTime(d.key)
         }));
         this.yScale.domain([0, d3.max(this.data, d => d.value.Total)]);
         this.x2Scale.domain(this.xScale.domain());
         this.y2Scale.domain(this.yScale.domain());
 
-        // console.log(this.xScale.domain(), d3.extent(this.data, d => d.key=="null" ? new Date() : d.key));
 
         let xAxis = d3.axisBottom(this.xScale),
             xAxis2 = d3.axisBottom(this.x2Scale),
@@ -96,13 +94,17 @@ class Timeline {
             .on("zoom", zoomed);
 
         let line = d3.line()
-            .defined(function(d) { return !isNaN(d.total); })
+            .defined(function (d) {
+                return !isNaN(d.total);
+            })
             .curve(d3.curveLinear)
             .x(d => this.xScale(d.date))
             .y(d => this.yScale(d.total));
 
         let line2 = d3.line()
-            .defined(function(d) { return !isNaN(d.total); })
+            .defined(function (d) {
+                return !isNaN(d.total);
+            })
             .curve(d3.curveLinear)
             .x(d => this.x2Scale(d.date))
             .y(d => this.y2Scale(d.total));
@@ -113,7 +115,7 @@ class Timeline {
             .attr("width", this.svgWidth)
             .attr("height", this.height1);
 
-        let sources = this.colorScale.domain().map(function(name) {
+        let sources = this.colorScale.domain().map(function (name) {
             return {
                 name: name,
                 values: self.data.map(function (d) {
@@ -139,7 +141,7 @@ class Timeline {
                 .tickFormat(""));
 
         let focuslines = focuslineGroups.append("path")
-            .attr("class","line")
+            .attr("class", "line")
             .attr("d", d => line(d.values))
             .style("stroke", d => this.colorScale(d.name))
             .attr("clip-path", "url(#clip)");
@@ -208,20 +210,21 @@ class Timeline {
             focus.selectAll(".line").attr("d", d => line(d.values));
             focus.select(".xAxis").call(xAxis);
             context.select(".brush").call(brush.move, self.xScale.range().map(t.invertX, t));
-            // console.log(d3.event.transform.k);
-        }
 
-        let sleeping = false;
 
-        function callUpdate(){
-            if (!sleeping){
-                sleeping = true;
-                setTimeout(function(){
-                    window.updateFilters();
-                    sleeping = false;
-                }, 500);
+            let sleeping = false;
+
+            function callUpdate() {
+                if (!sleeping) {
+                    sleeping = true;
+                    setTimeout(function () {
+                        window.updateFilters();
+                        sleeping = false;
+                    }, 500);
+                }
+
             }
         }
-
     }
 }
+
