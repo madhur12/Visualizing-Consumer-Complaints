@@ -6,7 +6,7 @@ class PerformanceChart {
         this.divBestWorst = d3.select("#best-worst");
         this.count = 0;
         // Initializes the svg elements required for this chart
-        this.margin = {top: 10, right: 20, bottom: 30, left: 50};
+        this.margin = {top: 10, right: 20, bottom: 20, left: 50};
         this.svgBounds = this.divBestWorst.node().getBoundingClientRect();
         this.svgWidth = this.svgBounds.width - this.margin.left - this.margin.right;
         this.svgHeight = 700;
@@ -17,6 +17,8 @@ class PerformanceChart {
             .attr("height", this.svgHeight)
             .attr("id", "checkchutiyekacode");
 
+
+
         let States = [];
         //Initializing the data for this chart
         this.data = null;
@@ -26,6 +28,13 @@ class PerformanceChart {
     }
 
     updateCompanies(strSort) {
+
+        // Minimum Number of Total Complaints:
+        let minComplaints = 300;
+
+        // min number of companies in the performance chart
+        let numCompanies = 10;
+
         let counter = this.count;
         let self = this;
         let totaldata = self.data;
@@ -33,13 +42,26 @@ class PerformanceChart {
         let paddingBottom = 50;
         let g1 = self.svg.append("g").attr("transform", "translate(20,10)");
         let g2 = self.svg.append("g").attr("transform", "translate(20,10)");
+        let data = [];
 
-        let data = []
+
+        let gMessage = this.svg
+            .append("g")
+            .attr("transform", "translate(" + 20 + "," + self.svgHeight/2 +")")
+            .attr("width", this.svgWidth)
+            .attr("height", this.svgHeight)
+            .attr("id", "gMessage");
+
         totaldata.forEach(function (d) {
-            if (d.value.Total > 500) {
+            if (d.value.Total > minComplaints) {
                 data.push(d);
             }
-        })
+        });
+
+        let maxValue = d3.max(totaldata , function (d) {
+            return (+d.value["Total"]) ;
+        });
+
 
         if (document.contains(document.getElementById("xaxis"))) {
             document.getElementById("xaxis").remove();
@@ -47,46 +69,73 @@ class PerformanceChart {
         if (document.contains(document.getElementById("yaxis"))) {
             document.getElementById("yaxis").remove();
         }
+        if (document.contains(document.getElementById("yaxisWorst"))) {
+            document.getElementById("yaxisWorst").remove();
+        }
+
 
         function GetTopTenCompanies(arrayData) {
             arrayData.sort(function (a, b) {
                 return d3.descending((a.value[strSort]), (b.value[strSort]));
             });
-            return arrayData.slice(0, 10);
+            return arrayData.slice(0, numCompanies);
         }
 
         function GetBottomTenCompanies(arrayData) {
             arrayData.sort(function (a, b) {
                 return d3.ascending((a.value[strSort]), (b.value[strSort]));
             });
-            return arrayData.slice(0, 10);
+            return arrayData.slice(0, numCompanies);
         }
 
-        data = GetTopTenCompanies(data).concat(GetBottomTenCompanies(data).reverse())
-        let y = d3.scaleBand()
-            .domain(data.map(function (d) {
+        let dataX = GetTopTenCompanies(data).concat(GetBottomTenCompanies(data).reverse())
+
+        let dataWorst = GetTopTenCompanies(data)
+        let dataBest = GetBottomTenCompanies(data).reverse()
+
+
+        let yBest = d3.scaleBand()
+            .domain(dataBest.map(function (d) {
                 return d.key;
             }))
-            .range([0, self.svgHeight - paddingBottom]);
+            .range([self.svgHeight/2, self.svgHeight -30]);
+
+        let yWorst = d3.scaleBand()
+            .domain(dataWorst.map(function (d) {
+                return d.key;
+            }))
+            .range([0, self.svgHeight/2 - 30]);
+
 
         let x = d3.scaleLinear()
-            .domain([0, d3.max(data, function (d) {
+            .domain([0, d3.max(dataX, function (d) {
                 return d.value[strSort]
             })])
             .range([0, self.svgWidth - paddingLeft - 20])
             .nice();
 
-        let yAxis = d3.axisLeft()
-            .scale(y);
+        let yAxisBest = d3.axisLeft()
+            .scale(yBest);
+        let yAxisWorst = d3.axisLeft()
+            .scale(yWorst);
+
         let xAxis = d3.axisBottom()
             .scale(x);
 
         g1.append("g")
             .attr("id", "yaxis")
-            .attr("transform", "translate(" + paddingLeft + "," + 0 + ")")
-            .call(yAxis)
+            .attr("transform", "translate(" + paddingLeft + "," + -20  + ")")
+            .call(yAxisBest)
             .selectAll("text")
             .style("font-weight", "bold")
+
+        g1.append("g")
+            .attr("id", "yaxisWorst")
+            .attr("transform", "translate(" + paddingLeft + "," + 0 + ")")
+            .call(yAxisWorst)
+            .selectAll("text")
+            .style("font-weight", "bold")
+
 
         g2.append("g")
             .attr("id", "xaxis")
@@ -101,34 +150,110 @@ class PerformanceChart {
                 return "rotate(-45)"
             });
 
+        if (maxValue < minComplaints) {
+            if (document.contains(document.getElementById("xaxis"))) {
+                document.getElementById("xaxis").remove();
+            }
+            if (document.contains(document.getElementById("yaxis"))) {
+                document.getElementById("yaxis").remove();
+            }
+            if (document.contains(document.getElementById("yaxisWorst"))) {
+                document.getElementById("yaxisWorst").remove();
+            }
+            gMessage.selectAll("text").exit().remove()
+            gMessage
+                .append("text")
+                .html("No Data meets the selected criteria !!!" +"<br/>" + " Please Try changing Filters")
+                .style("font-weight", "bold")
+                .style("fill" ,"steelblue")
+                .style("font-size", 36)
+        }
 
-        let barAppend = self.svg.append("g")
-            .attr("id", "barId")
-            .attr("transform", "translate(20,10)");
-        let barSelection = d3.select("#barId");
-        let rectSelect = barSelection.selectAll("rect").data(data)
-        let newbars = rectSelect.enter().append("rect");
-        rectSelect.exit().remove();
-        rectSelect = newbars.merge(rectSelect);
+        let background = self.svg.append("g");
+        background
+            .append("text")
+            .attr("x",self.svgWidth/2)
+            .attr("y",self.svgHeight/4)
+            .attr("text-anchor","middle")
+            .attr("class", "performer-category")
+            .text("TOP");
 
-        rectSelect
-            .transition().duration(1000)
+        background
+            .append("text")
+            .attr("x",self.svgWidth/2)
+            .attr("y",self.svgHeight*3/4)
+            .attr("text-anchor","middle")
+            .attr("class", "performer-category")
+            .text("BOTTOM");
+
+
+        let barAppendBest = self.svg.append("g")
+            .attr("id", "barIdBest")
+            .attr("transform","translate(20, " + (self.svgHeight/2 - 10) + ")");
+        let barSelectionBest = d3.select("#barIdBest");
+        let rectSelectBest = barSelectionBest.selectAll("rect").data(dataBest);
+        let newbarsBest = rectSelectBest.enter().append("rect")
             .attr("x", paddingLeft)
             .attr("y", function (d, i) {
-                return ((self.svgHeight - paddingBottom) / 20) * i;
+                return ((self.svgHeight/2) / (dataBest.length+1)) * i;
+            })
+            .attr("width", 0)
+            .attr("height", ((self.svgHeight/2) / (dataBest.length+1)))
+            .style("fill", "#99c0e5")
+            .style("opacity", 0)
+            .style("stroke", "black")
+            .style("stroke-width", "1px");
+
+        rectSelectBest.exit().remove();
+        rectSelectBest = newbarsBest.merge(rectSelectBest);
+
+        rectSelectBest
+            .transition().duration(3000)
+            .attr("x", paddingLeft)
+            .attr("y", function (d, i) {
+                return (((self.svgHeight/2) / (dataBest.length +1)) * i);
             })
             .attr("width", function (d) {
                 return x(d.value[strSort]);
             })
-            .attr("height", (self.svgHeight - paddingBottom) / 20)
-            .style("fill", function (d, i) {
-                if (i < 10) {
-                    return "LightCoral";
-                }
-                else {
-                    return "Steelblue";
-                }
+            .attr("height", ((self.svgHeight/2)/ (dataBest.length +1)))
+            .style("fill", "#99c0e5")
+            .style("opacity", 0.7)
+            .style("stroke", "black")
+            .style("stroke-width", "1px");
+
+
+        let barAppendWorst = self.svg.append("g")
+            .attr("id", "barIdWorst")
+            .attr("transform",  "translate(20,10)");
+        let barSelectionWorst = d3.select("#barIdWorst");
+        let rectSelectWorst = barSelectionWorst.selectAll("rect").data(dataWorst)
+        let newbarsWorst = rectSelectWorst.enter().append("rect")
+            .attr("x", paddingLeft)
+            .attr("y", function (d, i) {
+                return (((self.svgHeight/2) / (dataWorst.length+1)) * i);
             })
+            .attr("width", 0)
+            .attr("height", ((self.svgHeight/2) / (dataWorst.length+1)))
+            .style("fill", "#fda4a7")
+            .style("opacity", 0)
+            .style("stroke", "black")
+            .style("stroke-width", "1px");
+
+        rectSelectWorst.exit().remove();
+        rectSelectWorst = newbarsWorst.merge(rectSelectWorst);
+
+        rectSelectWorst
+            .transition().duration(3000)
+            .attr("x", paddingLeft)
+            .attr("y", function (d, i) {
+                return (((self.svgHeight/2) / (dataWorst.length+1)) * i);
+            })
+            .attr("width", function (d) {
+                return x(d.value[strSort]);
+            })
+            .attr("height", ((self.svgHeight/2)/ (dataWorst.length+1)))
+            .style("fill", "#fda4a7")
             .style("opacity", 0.7)
             .style("stroke", "black")
             .style("stroke-width", "1px");
@@ -164,7 +289,22 @@ class PerformanceChart {
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-        rectSelect.on("mouseover", function (d) {
+        rectSelectWorst.on("mouseover", function (d) {
+            val, message = getMessage(d)
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            div.html(message+ "" + "<br/>" + "" + val)
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+        })
+            .on("mouseout", function (d) {
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+
+        rectSelectBest.on("mouseover", function (d) {
             val, message = getMessage(d)
             div.transition()
                 .duration(200)
@@ -205,17 +345,12 @@ class PerformanceChart {
             this.onetime = true;
         }
 
-        rectSelect
+        this.svg.selectAll("rect")
             .on("click", function(d) {
-                rectSelect.
-                style("fill", function (d,i) {
-                    if (i < 10 ) {
-                        return "LightCoral";
-                    }
-                    else {
-                        return "steelblue";
-                    }
-                });
+                rectSelectBest.
+                style("fill", "steelblue")
+                rectSelectWorst.
+                style("fill", "LightCoral")
                 d3.select(this)
                     .style("fill", "red");
                 d3.select("#table").style("display", "table");
@@ -233,27 +368,20 @@ class PerformanceChart {
                 }
             });
 
-
         function tabulate() {
-
             let rows = d3.select("#tbody").selectAll("tr");
-
             let rowData = rows.data(self.tableData);
             let rowEnter = rowData.enter().append("tr");
-
             rowEnter.append("th");
-
             rowData.exit().remove();
-
             rowData = rowEnter.merge(rowData);
-
             let thead = rowData.select("th");
             thead.text(d => d.key);
 
             rowData.style("background-color", function () {
                 if(counter % 2 == 0){counter++ ; return "#A9D0F5"}
                 else{counter++; return "#EFF2FB"}
-            })
+            });
 
             let tdata = rowData.selectAll("td")
                 .data(function (d) {
@@ -263,7 +391,7 @@ class PerformanceChart {
                         (d.value.PercentDisputed).toFixed(2)+'%',
                         (d.value.PercentTimely).toFixed(2)+'%',
                         "button-"+d.key ]
-                })
+                });
 
 
             tdata.enter().append("td");
@@ -295,16 +423,29 @@ class PerformanceChart {
 
             tabulate();
         }
+        console.log("in main")
+        d3.select("#inds").on("change", function () {
+            let dropdown = document.getElementById("inds");
+            let view = dropdown.options[dropdown.selectedIndex].value;
+            self.updateCompanies(view);
+            window.mapObj.updateMap(view);
+        });
     }
 
     updateData(){
+
+        let self = this;
 
         // Don't update if clicked on the current chart
         if (this.clicked){
             this.clicked = false;
             return
         }
-
+        let re =this.svg.selectAll("rect")
+            .transition()
+            .duration(1500)
+            .attr("width", 0)
+            .style("opacity", 0.0);
         let parseTime = d3.timeParse("%m/%d/%Y");
 
         this.data = window.allData.filter(function (d) {
@@ -334,14 +475,16 @@ class PerformanceChart {
             })
             .entries(this.data);
 
-        this.svg.selectAll("*").remove();
 
+        self.svg.selectAll("*").remove();
+
+        this.changeView();
+
+    }
+
+    changeView(){
         let dropdown = document.getElementById("inds");
         let view = dropdown.options[dropdown.selectedIndex].value;
-
-        console.log(view);
-
         this.updateCompanies(view);
-
     }
 }
