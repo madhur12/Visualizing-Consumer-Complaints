@@ -42,6 +42,7 @@ class PerformanceChart {
         let g2 = self.svg.append("g").attr("transform", "translate(10,30)");
         let data = [];
 
+        d3.selectAll("#gMessage").remove();
 
         let gMessage = this.svg
             .append("g")
@@ -50,7 +51,24 @@ class PerformanceChart {
             .attr("height", this.svgHeight)
             .attr("id", "gMessage");
 
-        gMessage.selectAll("text").exit().remove();
+        let background = self.svg.append("g")
+            .style("display", null);
+        background
+            .append("text")
+            .attr("x",self.svgWidth/2)
+            .attr("y",self.svgHeight/4)
+            .attr("text-anchor","start")
+            .attr("class", "performer-category")
+            .text("TOP");
+
+        background
+            .append("text")
+            .attr("x",self.svgWidth/2)
+            .attr("y",self.svgHeight*3/4)
+            .attr("text-anchor","start")
+            .attr("class", "performer-category")
+            .text("BOTTOM");
+
 
         totaldata.forEach(function (d) {
             if (d.value.Total > minComplaints) {
@@ -166,36 +184,19 @@ class PerformanceChart {
                 .style("font-weight", "bold")
                 .style("fill" ,"#fda4a7")
                 .style("font-size", 36)
-                .attr("text-anchor", "middle");
+                .attr("text-anchor", "start");
 
             gmText.append("tspan")
                 .attr("x",self.svgWidth/2)
-                .attr("dy", "1.2em")
                 .html("No Data meets the selected criteria !!!");
 
             gmText.append("tspan")
                 .attr("x",self.svgWidth/2)
                 .attr("dy", "1.2em")
-                .html("Please Try changing Filters");
+                .html("Please Try changing MinComplaints Filter");
+
+            background.style("display", "none");
         }
-
-        let background = self.svg.append("g");
-        background
-            .append("text")
-            .attr("x",self.svgWidth/2)
-            .attr("y",self.svgHeight/4)
-            .attr("text-anchor","start")
-            .attr("class", "performer-category")
-            .text("TOP");
-
-        background
-            .append("text")
-            .attr("x",self.svgWidth/2)
-            .attr("y",self.svgHeight*3/4)
-            .attr("text-anchor","start")
-            .attr("class", "performer-category")
-            .text("BOTTOM");
-
 
         let barAppendBest = self.svg.append("g")
             .attr("id", "barIdBest")
