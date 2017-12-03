@@ -174,7 +174,7 @@ class Timeline {
         let legendsEnter = legends.enter().append("g");
 
         legendsEnter.append("circle")
-            .attr("cx", (d,i) => i*120 + 130)
+            .attr("cx", (d,i) => i*175 + 130)
             .attr("cy", 10 )
             .attr("r", 5)
             .attr("class", d => "category"+d.name)
@@ -184,7 +184,7 @@ class Timeline {
             .on("mouseout", highlightDisable());
 
         legendsEnter.append("text")
-            .attr("x", (d,i) => i*120 + 145)
+            .attr("x", (d,i) => i*175 + 145)
             .attr("y", 15)
             .attr("class", d => "category"+d.name)
             .text(d => d.name)
