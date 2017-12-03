@@ -183,10 +183,14 @@ select.selectMapHide
     left: 100%;
 }
 
-.container-fluid > div, .row > .col {
+.container-fluid > div, .row > .col, .col > div, #best-worst {
     border: solid;
     border-color: lightgray;
     border-width: thin;
+}
+
+#about, #map {
+    border: none;
 }
 
 #filters span {
@@ -244,4 +248,9 @@ nav {
     column-count: 2;
     column-rule: 1px solid lightblue;
     column-span: all;
+}
+
+.selectedCategory {
+    opacity: 1;
+    stroke-width: 4;
 }

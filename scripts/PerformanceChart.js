@@ -45,11 +45,12 @@ class PerformanceChart {
 
         let gMessage = this.svg
             .append("g")
-            .style("display", "none")
             .attr("transform", "translate(" + 10 + "," + (20+ self.svgHeight/2) +")")
             .attr("width", this.svgWidth)
             .attr("height", this.svgHeight)
             .attr("id", "gMessage");
+
+        gMessage.selectAll("text").exit().remove();
 
         totaldata.forEach(function (d) {
             if (d.value.Total > minComplaints) {
@@ -159,13 +160,23 @@ class PerformanceChart {
             if (document.contains(document.getElementById("yaxisWorst"))) {
                 document.getElementById("yaxisWorst").remove();
             }
-            // gMessage.selectAll("text").exit().remove()
-            // gMessage
-            //     .append("text")
-            //     .html("No Data meets the selected criteria !!!" +"<br/>" + " Please Try changing Filters")
-            //     .style("font-weight", "bold")
-            //     .style("fill" ,"steelblue")
-            //     .style("font-size", 36)
+
+            let gmText = gMessage
+                .append("text")
+                .style("font-weight", "bold")
+                .style("fill" ,"#fda4a7")
+                .style("font-size", 36)
+                .attr("text-anchor", "middle");
+
+            gmText.append("tspan")
+                .attr("x",self.svgWidth/2)
+                .attr("dy", "1.2em")
+                .html("No Data meets the selected criteria !!!");
+
+            gmText.append("tspan")
+                .attr("x",self.svgWidth/2)
+                .attr("dy", "1.2em")
+                .html("Please Try changing Filters");
         }
 
         let background = self.svg.append("g");

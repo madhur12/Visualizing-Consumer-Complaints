@@ -51,7 +51,7 @@ class Sunburst{
             .attr("width", this.width)
             .attr("height", 50)
             .attr("id", "trail")
-            .attr("transform", "translate(10,5)");
+            .attr("transform", "translate(10,10)");
 
         this.trail.append("svg:text")
             .attr("id", "endlabel")

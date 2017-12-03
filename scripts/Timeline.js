@@ -59,7 +59,7 @@ class Timeline {
             .rollup(function (d) {
                 return {
                     "Total": d3.sum(d, d => 1),
-                    "Timely": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
+                    "TimelyResponse": d3.sum(d, d => d["Timely response?"] == "Yes" ? 1 : 0),
                     "Disputed": d3.sum(d, d => d["Consumer disputed?"] == "Yes" ? 1 : 0),
                     "Fax": d3.sum(d, d => d["Submitted via"] == "Fax" ? 1 : 0),
                     "Web": d3.sum(d, d => d["Submitted via"] == "Web" ? 1 : 0),
@@ -78,7 +78,7 @@ class Timeline {
             .rollup(function(d) {
                 return {
                     "Total": d3.sum(d, d => 1),
-                    "Timely": d3.sum(d, d => d["Timely response?"]=="Yes" ? 1: 0 ),
+                    "TimelyResponse": d3.sum(d, d => d["Timely response?"]=="Yes" ? 1: 0 ),
                     "Disputed": d3.sum(d, d => d["Consumer disputed?"]=="Yes" ? 1: 0 ),
                     "Fax": d3.sum(d, d => d["Submitted via"]=="Fax" ? 1: 0 ),
                     "Web": d3.sum(d, d => d["Submitted via"]=="Web" ? 1: 0 ),
@@ -177,12 +177,31 @@ class Timeline {
             .attr("cx", (d,i) => i*120 + 130)
             .attr("cy", 10 )
             .attr("r", 5)
-            .style("fill", d => this.colorScale(d.name));
+            .attr("class", d => "category"+d.name)
+            .style("fill", d => this.colorScale(d.name))
+            .style("opacity", 0.5)
+            .on("mouseover", highlight)
+            .on("mouseout", highlightDisable());
 
         legendsEnter.append("text")
             .attr("x", (d,i) => i*120 + 145)
             .attr("y", 15)
-            .text(d => d.name);
+            .attr("class", d => "category"+d.name)
+            .text(d => d.name)
+            .style("opacity", 0.5)
+            .on("mouseover", highlight)
+            .on("mouseout", highlightDisable);
+
+        function highlight(d) {
+            let sel = ".category"+d.name;
+            let check = d3.selectAll(sel)
+                .classed("selectedCategory", true);
+        }
+
+        function highlightDisable(d) {
+            d3.selectAll(".selectedCategory")
+                .classed("selectedCategory", false);
+        }
 
         let sourcesContext = this.colorScale.domain().map(function (name) {
             return {
@@ -210,17 +229,11 @@ class Timeline {
                 .tickFormat(""));
 
         let focuslines = focuslineGroups.append("path")
-            .attr("class", "line")
+            .attr("class", d => "line category"+d.name)
             .attr("d", d => line(d.values))
             .style("stroke", d => this.colorScale(d.name))
             .attr("opacity", "0.5")
-            .attr("clip-path", "url(#clip)")
-            // .on("mouseover", function () {
-            //     d3.select(this).attr("opacity", "0.8").classed("selected", true);
-            // })
-            // .on("mouseout", function () {
-            //     d3.select(".selected").classed("selected", false);
-            // });
+            .attr("clip-path", "url(#clip)");
 
         focus.append("g")
             .attr("class", "xAxis axis")
@@ -370,7 +383,7 @@ class Timeline {
             .enter().append("g");
 
         let contextLines = contextlineGroups.append("path")
-            .attr("class", "line")
+            .attr("class", d => "line category"+d.name)
             .transition()
             .duration(2000)
             .attr("d", d => line2(d.values))

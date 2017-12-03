@@ -157,6 +157,7 @@ class Map {
         let parseTime = d3.timeParse("%m/%d/%Y");
         this.data = window.allData.filter(function (d) {
             return (window.filters.Company == null || d["Company"] == window.filters.Company)
+                && (window.filters.Product == null || d["Product"] == window.filters.Product)
                 && (window.filters.Start == null || (parseTime(d["Date received"]) >= window.filters.Start
                     && parseTime(d["Date received"]) <= window.filters.End));
         });
